@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package vn.co.abc.banking.proto;
+
+import "response.proto";
+
+option java_multiple_files = true;
+option java_package = "vn.co.abc.banking.proto";
+
+service PaymentController {
+  rpc processPrepaid(PrepaidRequest) returns (Response);
+}
+
+message PrepaidRequest {
+  string customerId = 1;
+  double amount = 2;
+}
