@@ -12,6 +12,6 @@ service PaymentController {
 }
 
 message PrepaidRequest {
-  string customerId = 1;
+  string phoneNumber = 1;
   double amount = 2;
 }
