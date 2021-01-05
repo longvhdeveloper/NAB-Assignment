@@ -19,6 +19,7 @@
         <module>eureka-server</module>
         <module>proto</module>
         <module>payment</module>
+        <module>voucher</module>
         <module>api</module>
     </modules>
 

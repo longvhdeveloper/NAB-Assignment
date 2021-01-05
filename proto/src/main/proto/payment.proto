@@ -2,16 +2,41 @@ syntax = "proto3";
 
 package vn.co.abc.banking.proto;
 
-import "response.proto";
 
 option java_multiple_files = true;
 option java_package = "vn.co.abc.banking.proto";
 
 service PaymentController {
-  rpc processPrepaid(PrepaidRequest) returns (Response);
+  rpc processPrepaid(PaymentRequest) returns (PaymentResponse);
+  rpc getPaymentInfo(GetPaymentInfoRequest) returns (GetPaymentInfoResponse);
 }
 
-message PrepaidRequest {
+message PaymentRequest {
   string phoneNumber = 1;
   double amount = 2;
+}
+
+message GetPaymentInfoRequest {
+  string transactionId = 1;
+}
+
+message PaymentResponse {
+  int32 status = 1;
+  PaymentInfo paymentInfo = 2;
+}
+
+message GetPaymentInfoResponse {
+  PaymentInfo paymentInfo = 1;
+}
+
+message PaymentInfo {
+  string transactionId = 1;
+
+}
+
+enum StatusCode {
+  OK = 0;
+  CANCELLED = 1;
+  UNKNOWN = 2;
+  INVALID_ARGUMENT = 3;
 }

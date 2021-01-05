@@ -1,12 +1,12 @@
 package vn.co.abc.banking.payment.validator;
 
 import org.springframework.stereotype.Component;
-import vn.co.abc.banking.proto.PrepaidRequest;
+import vn.co.abc.banking.proto.PaymentRequest;
 
 @Component
-public class PrepaidRequestValidator {
-    public boolean valid(PrepaidRequest request) {
-        if (request.getCustomerId().isEmpty()) {
+public class PaymentRequestValidator {
+    public boolean valid(PaymentRequest request) {
+        if (request.getPhoneNumber().isEmpty()) {
             return false;
         }
 

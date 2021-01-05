@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package vn.co.abc.banking.proto;
+
+
+option java_multiple_files = true;
+option java_package = "vn.co.abc.banking.proto";
+
+service VoucherController {
+  rpc getVoucher(GetVoucherRequest) returns (GetVoucherResponse);
+}
+
+message GetVoucherRequest {
+  string phoneNumber = 1;
+  string transactionId = 2;
+}
+
+message GetVoucherResponse {
+  int32 status = 1;
+  VoucherInfo voucherInfo = 2;
+}
+
+message VoucherInfo {
+  string code = 1;
+}

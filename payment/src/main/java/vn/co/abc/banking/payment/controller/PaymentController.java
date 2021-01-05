@@ -5,12 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.GRpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import vn.co.abc.banking.payment.service.PrepaidService;
-import vn.co.abc.banking.payment.validator.PrepaidRequestValidator;
-import vn.co.abc.banking.proto.PaymentControllerGrpc;
-import vn.co.abc.banking.proto.PrepaidRequest;
-import vn.co.abc.banking.proto.Response;
-import vn.co.abc.banking.proto.StatusCode;
+import vn.co.abc.banking.payment.entity.Payment;
+import vn.co.abc.banking.payment.service.PaymentService;
+import vn.co.abc.banking.payment.validator.GetPaymentInfoRequestValidator;
+import vn.co.abc.banking.payment.validator.PaymentRequestValidator;
+import vn.co.abc.banking.proto.*;
+
+import java.util.Optional;
 
 
 @GRpcService
@@ -18,21 +19,25 @@ import vn.co.abc.banking.proto.StatusCode;
 @Slf4j
 public class PaymentController extends PaymentControllerGrpc.PaymentControllerImplBase {
 
-    private final PrepaidRequestValidator prepaidRequestValidator;
-    private final PrepaidService prepaidService;
+    private final PaymentRequestValidator paymentRequestValidator;
+    private final GetPaymentInfoRequestValidator getPaymentInfoRequestValidator;
+    private final PaymentService paymentService;
 
     @Autowired
-    public PaymentController(PrepaidRequestValidator prepaidRequestValidator, PrepaidService prepaidService) {
-        this.prepaidRequestValidator = prepaidRequestValidator;
-        this.prepaidService = prepaidService;
+    public PaymentController(PaymentRequestValidator paymentRequestValidator,
+                             GetPaymentInfoRequestValidator getPaymentInfoRequestValidator,
+                             PaymentService paymentService) {
+        this.paymentRequestValidator = paymentRequestValidator;
+        this.getPaymentInfoRequestValidator = getPaymentInfoRequestValidator;
+        this.paymentService = paymentService;
     }
 
     @Override
-    public void processPrepaid(PrepaidRequest request, StreamObserver<Response> responseObserver) {
+    public void processPrepaid(PaymentRequest request, StreamObserver<PaymentResponse> responseObserver) {
         log.info("request received {}", request);
 
-        if (!prepaidRequestValidator.valid(request)) {
-            Response response = Response.newBuilder()
+        if (!paymentRequestValidator.valid(request)) {
+            PaymentResponse response = PaymentResponse.newBuilder()
                     .setStatus(StatusCode.INVALID_ARGUMENT_VALUE)
                     .build();
             log.info("server responded failed validation {}", response);
@@ -41,19 +46,49 @@ public class PaymentController extends PaymentControllerGrpc.PaymentControllerIm
             return;
         }
 
-        if (!prepaidService.processPrepaid(request)) {
-            Response response = Response.newBuilder()
-                    .setStatus(StatusCode.UNKNOWN_VALUE)
+        Payment payment = paymentService.processPrepaid(request);
+
+        PaymentResponse response = PaymentResponse.newBuilder()
+                .setStatus(StatusCode.OK_VALUE)
+                .setPaymentInfo(PaymentInfo.newBuilder()
+                        .setTransactionId(payment.getId().toString())
+                        .build())
+                .build();
+        log.info("server responded {}", response);
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getPaymentInfo(GetPaymentInfoRequest request, StreamObserver<GetPaymentInfoResponse> responseObserver) {
+        log.info("request received {}", request);
+
+        if (!getPaymentInfoRequestValidator.valid(request)) {
+            GetPaymentInfoResponse response = GetPaymentInfoResponse.newBuilder()
                     .build();
-            log.info("server responded failed process {}", response);
+            log.info("server responded failed validation {}", response);
             responseObserver.onNext(response);
             responseObserver.onCompleted();
             return;
         }
 
-        Response response = Response.newBuilder()
-                .setStatus(StatusCode.OK_VALUE)
+        Optional<Payment> optional = paymentService.getPaymentInfo(request);
+        if (optional.isEmpty()) {
+            GetPaymentInfoResponse response = GetPaymentInfoResponse.newBuilder()
+                    .build();
+            log.info("server responded not found data {}", response);
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+            return;
+        }
+
+        Payment payment = optional.get();
+        GetPaymentInfoResponse response = GetPaymentInfoResponse.newBuilder()
+                .setPaymentInfo(PaymentInfo.newBuilder()
+                        .setTransactionId(payment.getId().toString())
+                        .build())
                 .build();
+
         log.info("server responded {}", response);
         responseObserver.onNext(response);
         responseObserver.onCompleted();

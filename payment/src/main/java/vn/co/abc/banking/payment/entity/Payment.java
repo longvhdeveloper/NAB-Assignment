@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-public class Prepaid {
+public class Payment {
 
     @Id
     @GeneratedValue
@@ -30,7 +30,7 @@ public class Prepaid {
     @Column(name = "updated_date")
     private Date updatedDate;
 
-    public Prepaid(String phoneNumber, double amount) {
+    public Payment(String phoneNumber, double amount) {
         this.phoneNumber = phoneNumber;
         this.amount = amount;
     }
