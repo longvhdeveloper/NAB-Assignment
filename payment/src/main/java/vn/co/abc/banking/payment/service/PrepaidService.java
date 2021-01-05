@@ -19,8 +19,7 @@ public class PrepaidService {
     }
 
     public boolean processPrepaid(PrepaidRequest request) {
-        Prepaid prepaid = new Prepaid(UUID.fromString(request.getCustomerId()), request.getAmount());
-        prepaidRepository.save(prepaid);
+        //
         return true;
     }
 }

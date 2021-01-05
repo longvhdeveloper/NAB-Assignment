@@ -19,7 +19,6 @@
         <module>eureka-server</module>
         <module>proto</module>
         <module>payment</module>
-        <module>customer</module>
         <module>api</module>
     </modules>
 

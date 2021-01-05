@@ -16,7 +16,7 @@ public class Prepaid {
     @GeneratedValue
     private UUID id;
 
-    private UUID customerId;
+    private String phoneNumber;
 
     private double amount;
 
@@ -30,8 +30,8 @@ public class Prepaid {
     @Column(name = "updated_date")
     private Date updatedDate;
 
-    public Prepaid(UUID customerId, double amount) {
-        this.customerId = customerId;
+    public Prepaid(String phoneNumber, double amount) {
+        this.phoneNumber = phoneNumber;
         this.amount = amount;
     }
 }
