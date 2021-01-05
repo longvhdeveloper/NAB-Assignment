@@ -20,6 +20,7 @@
         <module>proto</module>
         <module>payment</module>
         <module>customer</module>
+        <module>api</module>
     </modules>
 
     <properties>

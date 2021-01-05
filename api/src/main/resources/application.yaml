@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: api
+
+logging:
+  level:
+    org:
+      springframework: error
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
+
+server:
+  port: 8080
