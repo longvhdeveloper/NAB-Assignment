@@ -52,6 +52,7 @@ public class PaymentController extends PaymentControllerGrpc.PaymentControllerIm
                 .setStatus(StatusCode.OK_VALUE)
                 .setPaymentInfo(PaymentInfo.newBuilder()
                         .setTransactionId(payment.getId().toString())
+                        .setPhoneNumber(payment.getPhoneNumber())
                         .build())
                 .build();
         log.info("server responded {}", response);
@@ -86,6 +87,7 @@ public class PaymentController extends PaymentControllerGrpc.PaymentControllerIm
         GetPaymentInfoResponse response = GetPaymentInfoResponse.newBuilder()
                 .setPaymentInfo(PaymentInfo.newBuilder()
                         .setTransactionId(payment.getId().toString())
+                        .setPhoneNumber(payment.getPhoneNumber())
                         .build())
                 .build();
 

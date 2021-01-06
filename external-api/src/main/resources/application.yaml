@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: external-stub-service
+
+logging:
+  level:
+    org:
+      springframework: error
+
+server:
+  port: 8088

@@ -2,6 +2,7 @@ package vn.co.abc.banking.api.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,8 +13,10 @@ import vn.co.abc.banking.api.controller.response.PrepaidResponse;
 import vn.co.abc.banking.api.exception.ExecutePrepaidException;
 import vn.co.abc.banking.api.service.PrepaidService;
 import vn.co.abc.banking.proto.PaymentRequest;
+import vn.co.abc.banking.proto.VoucherInfo;
 
 import javax.validation.Valid;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/v1")
@@ -31,11 +34,17 @@ public class PrepaidApiController {
     public ResponseEntity<PrepaidResponse> prepaid(@Valid @RequestBody PrepaidRequest request) throws ExecutePrepaidException {
         log.info("request receive: {}", request);
 
-        prepaidService.processPrepaid(PaymentRequest.newBuilder()
+        VoucherInfo voucherInfo = prepaidService.processPrepaid(PaymentRequest.newBuilder()
                 .setPhoneNumber(request.getPhoneNumber())
                 .setAmount(request.getAmount())
                 .build());
 
-        return null;
+        if (Objects.isNull(voucherInfo)) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(PrepaidResponse.builder()
+                .code(voucherInfo.getCode())
+                .build());
     }
 }
