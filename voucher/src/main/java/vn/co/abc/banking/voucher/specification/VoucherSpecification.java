@@ -11,10 +11,10 @@ public class VoucherSpecification {
     }
 
     public static Specification<Voucher> hasPhoneNumber(String phoneNumber) {
-        return (voucher, cq, cb) -> cb.equal(voucher.get("phone_number"), phoneNumber);
+        return (voucher, cq, cb) -> cb.equal(voucher.get("phoneNumber"), phoneNumber);
     }
 
     public static Specification<Voucher> hasTransactionId(String transactionId) {
-        return (voucher, cq, cb) -> cb.equal(voucher.get("transaction_id"), UUID.fromString(transactionId));
+        return (voucher, cq, cb) -> cb.equal(voucher.get("transactionId"), UUID.fromString(transactionId));
     }
 }

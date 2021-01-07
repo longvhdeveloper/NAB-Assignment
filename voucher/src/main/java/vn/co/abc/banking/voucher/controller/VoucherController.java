@@ -10,7 +10,9 @@ import vn.co.abc.banking.voucher.entity.Voucher;
 import vn.co.abc.banking.voucher.service.VoucherService;
 import vn.co.abc.banking.voucher.validator.GetVoucherRequestValidator;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @GRpcService
 @Slf4j
@@ -52,6 +54,7 @@ public class VoucherController extends VoucherControllerGrpc.VoucherControllerIm
         }
 
         Voucher voucher = optional.get();
+        log.info("Voucher: {}", voucher);
         GetVoucherResponse response = GetVoucherResponse.newBuilder()
                 .setStatus(StatusCode.OK_VALUE)
                 .setVoucherInfo(VoucherInfo.newBuilder()
@@ -62,5 +65,19 @@ public class VoucherController extends VoucherControllerGrpc.VoucherControllerIm
         responseObserver.onNext(response);
         responseObserver.onCompleted();
         return;
+    }
+
+    @Override
+    public void getVouchers(GetVouchersRequest request, StreamObserver<GetVouchersResponse> responseObserver) {
+        List<Voucher> vouchers = voucherService.getVouchers(request);
+        GetVouchersResponse response = GetVouchersResponse.newBuilder()
+                .setStatus(StatusCode.OK_VALUE)
+                .addAllVoucherInfo(vouchers.stream().map(voucher -> VoucherInfo.newBuilder()
+                        .setCode(voucher.getCode())
+                        .build()).collect(Collectors.toList()))
+                .build();
+        log.info("server responded {}", response);
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 }

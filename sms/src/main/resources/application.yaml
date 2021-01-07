@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: sms
+
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: stater_group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    topic:
+      sendSMS: send-sms
+
+logging:
+  level:
+    org:
+      springframework: error
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
+
+server:
+  port: 8083

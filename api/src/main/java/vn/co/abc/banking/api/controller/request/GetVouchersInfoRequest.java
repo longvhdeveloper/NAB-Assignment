@@ -1,18 +1,19 @@
 package vn.co.abc.banking.api.controller.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Positive;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
-public class PrepaidRequest {
+public class GetVouchersInfoRequest {
 
     @NotEmpty(message = "Phone number is not valid")
     private String phoneNumber;
 
-    @Positive(message = "Amount must be greater than zero")
-    private double amount;
+    @NotEmpty(message = "Passcode is not valid")
+    private String passCode;
 }

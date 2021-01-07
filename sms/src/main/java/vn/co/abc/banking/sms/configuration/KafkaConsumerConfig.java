@@ -1,4 +1,4 @@
-package vn.co.abc.banking.api.configuration;
+package vn.co.abc.banking.sms.configuration;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -10,7 +10,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-import vn.co.abc.banking.api.message.VoucherMessage;
+import vn.co.abc.banking.sms.message.SMSVoucherMessage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,12 +18,13 @@ import java.util.Map;
 @Configuration
 @Slf4j
 public class KafkaConsumerConfig {
+
     @Value(value = "${spring.kafka.consumer.bootstrap-servers}")
     private String bootstrapAddress;
 
-    public ConsumerFactory<String, VoucherMessage> voucherConsumerFactory() {
+    public ConsumerFactory<String, SMSVoucherMessage> smsVoucherConsumerFactory() {
 
-        JsonDeserializer<VoucherMessage> deserializer = new JsonDeserializer<>(VoucherMessage.class);
+        JsonDeserializer<SMSVoucherMessage> deserializer = new JsonDeserializer<>(SMSVoucherMessage.class);
 
 
         deserializer.setRemoveTypeHeaders(false);
@@ -40,10 +41,10 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, VoucherMessage> voucherKafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, VoucherMessage> factory
+    public ConcurrentKafkaListenerContainerFactory<String, SMSVoucherMessage> smsVoucherKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, SMSVoucherMessage> factory
                 = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(voucherConsumerFactory());
+        factory.setConsumerFactory(smsVoucherConsumerFactory());
         return factory;
     }
 }

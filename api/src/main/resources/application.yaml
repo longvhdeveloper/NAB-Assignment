@@ -2,6 +2,20 @@ spring:
   application:
     name: api
 
+  datasource:
+    username: root
+    password: 1234567890
+    url: jdbc:mysql://localhost:3306/banking?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
+    driverClassName: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+    hibernate.ddl-auto: update
+    generate-ddl: true
+    show-sql: true
+
   kafka:
     consumer:
       bootstrap-servers: localhost:9092
@@ -15,8 +29,9 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
     topic:
-      sendVoucher: send-voucher
       sendVoucherDLT: send-voucher.DLT
+      sendSMS: send-sms
+      deletePasscode: delete-passcode
 
 logging:
   level:

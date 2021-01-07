@@ -31,7 +31,7 @@ public class PrepaidApiController {
     }
 
     @PostMapping("/prepaid")
-    public ResponseEntity<PrepaidResponse> prepaid(@Valid @RequestBody PrepaidRequest request) throws ExecutePrepaidException {
+    public ResponseEntity<PrepaidResponse> prepaid(@Valid @RequestBody PrepaidRequest request) throws Throwable {
         log.info("request receive: {}", request);
 
         VoucherInfo voucherInfo = prepaidService.processPrepaid(PaymentRequest.newBuilder()
