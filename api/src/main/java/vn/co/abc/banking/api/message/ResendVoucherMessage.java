@@ -6,11 +6,11 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class VoucherMessage extends AbstractMessage {
+public class ResendVoucherMessage extends AbstractMessage {
     private String phoneNumber;
     private String transactionId;
 
-    public VoucherMessage(String phoneNumber, String transactionId) {
+    public ResendVoucherMessage(String phoneNumber, String transactionId) {
         this.phoneNumber = phoneNumber;
         this.transactionId = transactionId;
     }

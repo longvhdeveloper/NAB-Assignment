@@ -1,12 +1,13 @@
 package vn.co.abc.banking.api.message;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
+import vn.co.abc.banking.api.entity.PasscodeId;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
+@Data
 public class DeletePassCodeMessage extends AbstractMessage {
-    private String id;
+    private PasscodeId id;
 }

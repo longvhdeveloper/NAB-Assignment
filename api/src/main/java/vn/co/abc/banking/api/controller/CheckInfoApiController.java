@@ -36,7 +36,7 @@ public class CheckInfoApiController {
     @PostMapping("/passcode")
     public ResponseEntity<PassCodeResponse> getPasscode(@Valid @RequestBody PassCodeRequest request) {
         Passcode passcode = checkInfoService.getPasscode(request);
-        return ResponseEntity.ok(PassCodeResponse.builder().passCode(passcode.getPassCode()).build());
+        return ResponseEntity.ok(PassCodeResponse.builder().passCode(passcode.getId().getPassCode()).build());
     }
 
     @PostMapping("/vouchers")

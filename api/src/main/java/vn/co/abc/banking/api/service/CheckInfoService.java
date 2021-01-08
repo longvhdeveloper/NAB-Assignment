@@ -7,15 +7,14 @@ import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.co.abc.banking.api.controller.request.GetVouchersInfoRequest;
 import vn.co.abc.banking.api.controller.request.PassCodeRequest;
 import vn.co.abc.banking.api.entity.Passcode;
+import vn.co.abc.banking.api.entity.PasscodeId;
 import vn.co.abc.banking.api.exception.PasscodeNotValidException;
 import vn.co.abc.banking.api.message.DeletePassCodeMessage;
 import vn.co.abc.banking.api.repository.PasscodeRepository;
-import vn.co.abc.banking.api.specification.PasscodeSpecification;
 import vn.co.abc.banking.proto.GetVouchersRequest;
 import vn.co.abc.banking.proto.GetVouchersResponse;
 import vn.co.abc.banking.proto.VoucherControllerGrpc;
@@ -74,12 +73,10 @@ public class CheckInfoService {
     }
 
     private Optional<Passcode> getPasscode(String phoneNumber, String passcodeString) {
-        Specification<Passcode> specification = PasscodeSpecification.hasPhoneNumber(phoneNumber)
-                .and(PasscodeSpecification.hasPasscode(passcodeString));
-        return passcodeRepository.findOne(specification);
+        return passcodeRepository.findById(new PasscodeId(phoneNumber, passcodeString));
     }
 
     private void sendObjectDeletePasscodeViaKafka(Passcode passcode) {
-        producerService.sendMessage(deletePasscodeTopic, new DeletePassCodeMessage(passcode.getId().toString()));
+        producerService.sendMessage(deletePasscodeTopic, new DeletePassCodeMessage(passcode.getId()));
     }
 }

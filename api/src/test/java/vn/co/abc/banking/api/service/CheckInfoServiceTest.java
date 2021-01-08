@@ -9,12 +9,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.data.jpa.domain.Specification;
 import vn.co.abc.banking.api.controller.request.GetVouchersInfoRequest;
 import vn.co.abc.banking.api.entity.Passcode;
+import vn.co.abc.banking.api.entity.PasscodeId;
 import vn.co.abc.banking.api.exception.PasscodeNotValidException;
 import vn.co.abc.banking.api.repository.PasscodeRepository;
-import vn.co.abc.banking.api.specification.PasscodeSpecification;
 
 import java.util.Optional;
 
@@ -34,9 +33,7 @@ class CheckInfoServiceTest {
         String passcode = "123456";
         String phoneNumber = "123456789";
 
-        Specification<Passcode> specification = PasscodeSpecification.hasPhoneNumber(phoneNumber)
-                .and(PasscodeSpecification.hasPasscode(passcode));
-        Mockito.when(passcodeRepository.findOne(specification)).thenReturn(Optional.empty());
+        Mockito.when(passcodeRepository.findById(new PasscodeId(phoneNumber, passcode))).thenReturn(Optional.empty());
         Assertions.assertThrows(PasscodeNotValidException.class, () -> {
             checkInfoService.getVouchersInfo(new GetVouchersInfoRequest(phoneNumber, passcode));
         });
@@ -51,9 +48,7 @@ class CheckInfoServiceTest {
         Passcode passcodeObject = new Passcode(phoneNumber);
         passcodeObject.changeToDeactivate();
 
-        Specification<Passcode> specification = PasscodeSpecification.hasPhoneNumber(phoneNumber)
-                .and(PasscodeSpecification.hasPasscode(passcode));
-        Mockito.when(passcodeRepository.findOne(specification)).thenReturn(Optional.of(passcodeObject));
+        Mockito.when(passcodeRepository.findById(new PasscodeId(phoneNumber, passcode))).thenReturn(Optional.empty());
 
         Assertions.assertThrows(PasscodeNotValidException.class, () -> {
             checkInfoService.getVouchersInfo(new GetVouchersInfoRequest(phoneNumber, passcode));

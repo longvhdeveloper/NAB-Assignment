@@ -9,7 +9,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Objects;
-import java.util.UUID;
 
 @Table(indexes = {
         @Index(name = "idx_phone_number", columnList = "phoneNumber"),
@@ -20,19 +19,15 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Passcode {
 
-    @Id
-    @GeneratedValue
-    private UUID id;
+    @EmbeddedId
+    private PasscodeId id;
 
-    @Column(length = 20)
-    private String phoneNumber;
-
-    @Column(length = 6)
-    private String passCode;
-
+    @Getter
+    @Basic
     private int statusCode;
 
     @Transient
+    @Getter
     private Status status;
 
     @CreationTimestamp
@@ -46,8 +41,7 @@ public class Passcode {
     private Date updatedDate;
 
     public Passcode(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-        this.passCode = generatePassCode();
+        this.id = new PasscodeId(phoneNumber, generatePassCode());
         this.status = Status.ACTIVATE;
     }
 
@@ -57,7 +51,6 @@ public class Passcode {
 
     public void changeToDeactivate() {
         this.status = Status.DEACTIVATE;
-        this.statusCode = this.status.getStatus();
     }
 
     @PostLoad
@@ -71,6 +64,8 @@ public class Passcode {
     void fillPersistent() {
         if (!Objects.isNull(status)) {
             this.statusCode = status.getStatus();
+        } else {
+            this.statusCode = Status.ACTIVATE.getStatus();
         }
     }
 
@@ -82,8 +77,6 @@ public class Passcode {
     public String toString() {
         return "Passcode{" +
                 "id=" + id +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", passCode='" + passCode + '\'' +
                 ", statusCode=" + statusCode +
                 ", status=" + status +
                 ", createdDate=" + createdDate +

@@ -12,12 +12,15 @@ import org.springframework.retry.RetryCallback;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
+import vn.co.abc.banking.api.entity.Passcode;
 import vn.co.abc.banking.api.message.DeletePassCodeMessage;
+import vn.co.abc.banking.api.message.ResendVoucherMessage;
 import vn.co.abc.banking.api.message.SMSVoucherMessage;
-import vn.co.abc.banking.api.message.VoucherMessage;
+import vn.co.abc.banking.api.repository.PasscodeRepository;
 import vn.co.abc.banking.proto.*;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -26,19 +29,22 @@ public class ConsumerService {
     private final EurekaClient client;
     private final ProducerService producerService;
     private final RetryTemplate retryTemplate;
+    private final PasscodeRepository passcodeRepository;
 
     @Value("${spring.kafka.topic.sendSMS}")
     private String sendSMSTopic;
 
     @Autowired
-    public ConsumerService(EurekaClient client, ProducerService producerService, RetryTemplate retryTemplate) {
+    public ConsumerService(EurekaClient client, ProducerService producerService, RetryTemplate retryTemplate,
+                           PasscodeRepository passcodeRepository) {
         this.client = client;
         this.producerService = producerService;
         this.retryTemplate = retryTemplate;
+        this.passcodeRepository = passcodeRepository;
     }
 
     @KafkaListener(topics = "${spring.kafka.topic.sendVoucherDLT}", containerFactory = "voucherKafkaListenerContainerFactory")
-    public void listen(VoucherMessage message) throws Throwable {
+    public void listen(ResendVoucherMessage message) throws Throwable {
         log.info("Received voucher message: {}", message);
 
         final int maxAttempts = 5;
@@ -53,13 +59,20 @@ public class ConsumerService {
         sendObjectSMSViaKafka(message, voucher);
     }
 
-    @KafkaListener(topics = "${spring.kafka.topic.deletePasscode}", containerFactory = "voucherKafkaListenerContainerFactory")
+    @KafkaListener(topics = "${spring.kafka.topic.deletePasscode}", containerFactory = "passcodeKafkaListenerContainerFactory")
     public void listen(DeletePassCodeMessage message) throws Throwable {
-        log.info("Received voucher message: {}", message);
-        //
+        log.info("Received delete passcode message: {}", message);
+
+        Optional<Passcode> optional = passcodeRepository.findById(message.getId());
+
+        if (optional.isEmpty()) {
+            log.warn("Passcode with code {} is not exist", message.getId().getPassCode());
+            return;
+        }
+        passcodeRepository.delete(optional.get());
     }
 
-    private VoucherInfo getVoucher(VoucherMessage voucherMessage) {
+    private VoucherInfo getVoucher(ResendVoucherMessage resendVoucherMessage) {
         final InstanceInfo instanceInfo = client.getNextServerFromEureka("voucher-service", false);
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress(instanceInfo.getIPAddr(), instanceInfo.getPort())
@@ -69,21 +82,21 @@ public class ConsumerService {
         VoucherControllerGrpc.VoucherControllerBlockingStub stub = VoucherControllerGrpc.newBlockingStub(channel);
 
         GetVoucherResponse response = stub.getVoucher(GetVoucherRequest.newBuilder()
-                .setPhoneNumber(voucherMessage.getPhoneNumber())
-                .setTransactionId(voucherMessage.getTransactionId())
+                .setPhoneNumber(resendVoucherMessage.getPhoneNumber())
+                .setTransactionId(resendVoucherMessage.getTransactionId())
                 .build());
 
         if (response.getStatus() != StatusCode.OK_VALUE) {
             log.error("Can not get voucher code with transaction {} and phone number {}",
-                    voucherMessage.getTransactionId(), voucherMessage.getPhoneNumber());
+                    resendVoucherMessage.getTransactionId(), resendVoucherMessage.getPhoneNumber());
             throw new RuntimeException("Can not get voucher code");
         }
 
         return response.getVoucherInfo();
     }
 
-    private void sendObjectSMSViaKafka(VoucherMessage voucherMessage, VoucherInfo voucherInfo) {
-        producerService.sendMessage(sendSMSTopic, new SMSVoucherMessage(voucherMessage.getPhoneNumber(),
+    private void sendObjectSMSViaKafka(ResendVoucherMessage resendVoucherMessage, VoucherInfo voucherInfo) {
+        producerService.sendMessage(sendSMSTopic, new SMSVoucherMessage(resendVoucherMessage.getPhoneNumber(),
                 voucherInfo.getCode()));
     }
 }

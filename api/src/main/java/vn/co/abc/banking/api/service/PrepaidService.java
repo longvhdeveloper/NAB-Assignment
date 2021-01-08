@@ -11,7 +11,7 @@ import org.springframework.retry.RetryCallback;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
 import vn.co.abc.banking.api.exception.ExecutePrepaidException;
-import vn.co.abc.banking.api.message.VoucherMessage;
+import vn.co.abc.banking.api.message.ResendVoucherMessage;
 import vn.co.abc.banking.proto.*;
 
 @Service
@@ -96,7 +96,7 @@ public class PrepaidService {
     }
 
     private void sendObjectGetVoucherViaKafka(PaymentInfo paymentInfo) {
-        producerService.sendMessage(voucherTopicDLT, new VoucherMessage(paymentInfo.getPhoneNumber(),
+        producerService.sendMessage(voucherTopicDLT, new ResendVoucherMessage(paymentInfo.getPhoneNumber(),
                 paymentInfo.getTransactionId()));
     }
 }
