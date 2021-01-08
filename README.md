@@ -52,9 +52,11 @@ Stack is used in project:
 ### How to run it at localhost
 
 1. Setup kafka in your localhost by this guide:
+
    https://kafka.apache.org/quickstart
 
 2. Install mysql in your local machine
+   
    https://dev.mysql.com/doc/mysql-installation-excerpt/5.7/en/
 
 3. Access to mysql terminal by command
