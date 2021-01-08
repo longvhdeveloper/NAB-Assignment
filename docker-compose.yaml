@@ -157,6 +157,7 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-service:8761/eureka
       EUREKA_CLIENT_INSTANCE_NONSECUREPORT: 6567
       SERVER_PORT: 8082
+      EXTERNAL-API: http://external-api:8088/v1/example/voucher
     restart: always
     depends_on:
       - mysql
