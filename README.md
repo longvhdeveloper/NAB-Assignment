@@ -56,7 +56,7 @@ Stack is used in project:
    https://kafka.apache.org/quickstart
 
 2. Install mysql in your local machine
-   
+
    https://dev.mysql.com/doc/mysql-installation-excerpt/5.7/en/
 
 3. Access to mysql terminal by command
@@ -81,13 +81,13 @@ database connection info with database name you just create and username and pas
 Window
 
 ```shell
-mvnw install package -Dmaven.test.skip=true
+mvnw install package -DskipTests
 ```
 
 Linux/Unix
 
 ```shell
-./mvnw install package -Dmaven.test.skip=true
+./mvnw install package -DskipTests
 ```
 
 6. Run eurekaservice -> api -> external-api -> payment -> sms -> voucher
