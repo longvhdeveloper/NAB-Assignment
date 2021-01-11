@@ -213,6 +213,8 @@ Note: You will replace <passcode> with response passcode of above step
 
 - [ ] Write more unit test
 - [ ] Implement case when can not get voucher from 3rd API afer retry
+- [ ] Seperate passcode to service
+- [ ] Limit time to get passcode and view voucher
 - [ ] Implement exception handler to handle format error response
 - [ ] Refactoring and optimize code
 
