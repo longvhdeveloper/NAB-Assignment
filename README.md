@@ -41,7 +41,7 @@ Each module have structure folder as below:
             * service: Contain service process business logic of application
         * resources: contains all yaml file config for application
 
-Stack is used in project:
+Technical is used in project:
 
     * JDK 11
     * Spring boot 2.4.1
