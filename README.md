@@ -48,6 +48,7 @@ Stack is used in project:
     * Kafka
     * MySQL
     * Eureka Server
+    * GRPC
 
 ### How to run it at localhost
 
