@@ -41,13 +41,14 @@ Each module have structure folder as below:
             * service: Contain service process business logic of application
         * resources: contains all yaml file config for application
 
-Stack is used in project:
+Technical is used in project:
 
     * JDK 11
     * Spring boot 2.4.1
     * Kafka
     * MySQL
     * Eureka Server
+    * GRPC
 
 ### How to run it at localhost
 
@@ -213,7 +214,10 @@ Note: You will replace <passcode> with response passcode of above step
 
 - [ ] Write more unit test
 - [ ] Implement case when can not get voucher from 3rd API afer retry
+- [ ] Seperate passcode to service
+- [ ] Limit time to get passcode and view voucher
 - [ ] Implement exception handler to handle format error response
+- [ ] Limit rate for request get passcode
 - [ ] Refactoring and optimize code
 
 ### References
