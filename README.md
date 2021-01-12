@@ -216,6 +216,7 @@ Note: You will replace <passcode> with response passcode of above step
 - [ ] Seperate passcode to service
 - [ ] Limit time to get passcode and view voucher
 - [ ] Implement exception handler to handle format error response
+- [ ] Limit rate for request get passcode
 - [ ] Refactoring and optimize code
 
 ### References
