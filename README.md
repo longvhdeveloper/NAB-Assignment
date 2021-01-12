@@ -1,5 +1,97 @@
 # ABC Banking Project
 
+### Introduction
+
+Bank ABC want to provide a new feature on its website. The feature is to purchase prepaid data for a SIM card by getting
+a voucher code from a 3rd party. Anyone can purchase the prepaid data on the website without login.
+
+### Requirement
+
+- The bank wants to build a new service(s) to integrate with that 3rd party. But it expects that the API will return
+  voucher code or a message that says the request is being processed within 30 seconds.
+- If the web application receives the voucher code, it will show on the website for customers to use. In case that the
+  code can't be returned in-time, the customer can receive it via SMS later.
+- The customer can check all the voucher codes that they have purchased by phone number on the website, but it needs to
+  be secured.
+- Assume that the payment has been done before the website call to the services to get the voucher code.
+
+### High level design
+
+The basic algorithm executed by new service is to take information of amount payment of customer: phone number, amount
+as its input and execute the following steps:
+
+1. Validation customer information
+2. Process payment with customer information
+3. If process payment success will get voucher code.
+4. If process payment failed after try 3 times, system will write to Database to tracking
+5. Processing to get voucher code from 3rd API
+6. If get voucher code from 3rd API is success , system will return for customer using
+7. If get voucher code from 3rd API failed after try 3 times, system will write to database and send voucher code
+   through SMS after.
+
+So, base on above steps, we need minimize these components :
+
+* API: Endpoint to call from website
+* Payment: To store payment information
+* Voucher: To store information from 3rd API
+* Datastore: Store information as voucher, customer, payment
+
+![img.png](images/img.png)
+
+### Component Detail
+
+![img.png](images/img1.png)
+
+### Database Schema
+
+~~~sql
+CREATE TABLE `passcode` (
+  `pass_code` varchar(6) NOT NULL,
+  `phone_number` varchar(20) NOT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `status` int DEFAULT NULL,
+  `updated_date` datetime DEFAULT NULL,
+  `status_code` int NOT NULL,
+  PRIMARY KEY (`pass_code`,`phone_number`),
+  KEY `idx_phone_number` (`phone_number`),
+  KEY `idx_pass_code` (`pass_code`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `prepaid` (
+  `id` binary(255) NOT NULL,
+  `amount` double NOT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `customer_id` binary(255) DEFAULT NULL,
+  `updated_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `voucher` (
+  `id` binary(255) NOT NULL,
+  `code` varchar(50) DEFAULT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `phone_number` varchar(20) DEFAULT NULL,
+  `status` int DEFAULT NULL,
+  `status_code` int NOT NULL,
+  `transaction_id` binary(255) DEFAULT NULL,
+  `updated_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_code` (`code`),
+  KEY `idx_phone_number` (`phone_number`),
+  KEY `idx_transaction_id` (`transaction_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `payment` (
+  `id` binary(255) NOT NULL,
+  `amount` double NOT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `phone_number` varchar(255) DEFAULT NULL,
+  `updated_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+~~~
+
 ### Folder structure
 
 This project is structure by each module, and we have some module in this project
@@ -222,4 +314,4 @@ Note: You will replace <passcode> with response passcode of above step
 
 ### References
 
-Folder "docs" contains document design for project.
+Folder "images" contains images of README.md.
